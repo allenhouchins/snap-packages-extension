@@ -28,6 +28,16 @@ jobs:
         run: |
           GOOS=linux GOARCH=arm64 go build -o snap_packages_arm64.ext
 
+      - name: Set up git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create or update 'latest' tag at HEAD
+        run: |
+          git tag -f latest
+          git push -f origin latest
+
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
