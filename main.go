@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -54,6 +55,7 @@ func SnapPackagesGenerate(ctx context.Context, queryContext table.QueryContext) 
 	cmd := exec.Command("/usr/bin/snap", "list")
 	output, err := cmd.Output()
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error executing /usr/bin/snap list: %v\n", err)
 		return results, err
 	}
 
