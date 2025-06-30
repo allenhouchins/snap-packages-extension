@@ -35,6 +35,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Wait for GitHub to process tag deletion
+        run: sleep 15
+
+      - name: Create or update 'latest' tag at HEAD
+        run: |
+          git tag -f latest
+          git push -f origin latest
+
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
