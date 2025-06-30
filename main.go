@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -11,9 +12,17 @@ import (
 )
 
 func main() {
+	var socketPath string = ":0" // default
+	for i, arg := range os.Args {
+		if (arg == "-socket" || arg == "--socket") && i+1 < len(os.Args) {
+			socketPath = os.Args[i+1]
+			break
+		}
+	}
+
 	plugin := table.NewPlugin("snap_packages", SnapPackagesColumns(), SnapPackagesGenerate)
 
-	srv, err := osquery.NewExtensionManagerServer("snap_packages", ":0")
+	srv, err := osquery.NewExtensionManagerServer("snap_packages", socketPath)
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +51,7 @@ func SnapPackagesGenerate(ctx context.Context, queryContext table.QueryContext) 
 	var results []map[string]string
 
 	// Execute the snap list command
-	cmd := exec.Command("snap", "list")
+	cmd := exec.Command("/usr/bin/snap", "list")
 	output, err := cmd.Output()
 	if err != nil {
 		return results, err
@@ -91,4 +100,4 @@ func SnapPackagesGenerate(ctx context.Context, queryContext table.QueryContext) 
 	}
 
 	return results, scanner.Err()
-} 
+}
