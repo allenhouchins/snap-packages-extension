@@ -95,9 +95,33 @@ check_prerequisites() {
     
     # Check if curl is available
     if ! command -v curl &> /dev/null; then
-        log "Error: curl is required but not installed"
-        log "Please install curl: sudo apt update && sudo apt install curl"
-        exit 1
+        log "curl not found, attempting to install..."
+        
+        # Update package lists
+        log "Updating package lists..."
+        if apt update; then
+            log "Package lists updated successfully"
+        else
+            log "Warning: Failed to update package lists, proceeding with installation attempt"
+        fi
+        
+        # Install curl
+        log "Installing curl..."
+        if apt install -y curl; then
+            log "curl installed successfully"
+        else
+            log "Error: Failed to install curl"
+            log "Please install curl manually: sudo apt update && sudo apt install curl"
+            exit 1
+        fi
+        
+        # Verify curl is now available
+        if ! command -v curl &> /dev/null; then
+            log "Error: curl installation appears to have failed"
+            exit 1
+        fi
+    else
+        log "curl is already installed"
     fi
     
     log "Prerequisites check completed"
